@@ -1,0 +1,7 @@
+node_modules/
+vendor/
+bootstrap/
+
+# Optional: local/runtime files
+uploads/
+.env
