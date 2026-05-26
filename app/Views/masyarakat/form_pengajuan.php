@@ -1,4 +1,4 @@
-﻿
+
 <nav class="flex items-center gap-2 text-sm mb-6">
     <a href="<?= baseUrl('layanan.php') ?>" class="text-slate-400 hover:text-slate-600">Layanan</a>
     <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -481,6 +481,207 @@
                         </div>
                     </div>
 
+                <?php elseif ($jenis === 'kelahiran'): ?>
+                    <!-- KELAHIRAN -->
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Step 2: Formulir Pencatatan Sipil Kelahiran</h3>
+                    <p class="text-sm text-slate-500 mb-6">Lengkapi data pelaporan pencatatan sipil kelahiran sesuai dengan data riil.</p>
+
+                    <!-- Data Saksi -->
+                    <h4 class="font-bold text-slate-700 mb-3 text-sm border-b pb-2">DATA SAKSI</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Saksi <span class="text-red-500">*</span></label>
+                            <input type="text" name="nik_saksi" value="<?= htmlspecialchars($dataKelahiran['nik_saksi'] ?? '') ?>" required maxlength="16" placeholder="16 digit NIK Saksi" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Lengkap Saksi <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_saksi" value="<?= htmlspecialchars($dataKelahiran['nama_saksi'] ?? '') ?>" required placeholder="Nama lengkap saksi" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Data Orang Tua -->
+                    <h4 class="font-bold text-slate-700 mb-3 text-sm border-b pb-2">DATA ORANG TUA</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Ayah</label>
+                            <input type="text" name="nik_ayah" value="<?= htmlspecialchars($dataKelahiran['nik_ayah'] ?? '') ?>" maxlength="16" placeholder="16 digit NIK Ayah" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Ayah</label>
+                            <input type="text" name="nama_ayah" value="<?= htmlspecialchars($dataKelahiran['nama_ayah'] ?? '') ?>" placeholder="Nama lengkap ayah" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Ibu <span class="text-red-500">*</span></label>
+                            <input type="text" name="nik_ibu" value="<?= htmlspecialchars($dataKelahiran['nik_ibu'] ?? '') ?>" required maxlength="16" placeholder="16 digit NIK Ibu" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Ibu <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_ibu" value="<?= htmlspecialchars($dataKelahiran['nama_ibu'] ?? '') ?>" required placeholder="Nama lengkap ibu" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Data Kelahiran -->
+                    <h4 class="font-bold text-slate-700 mb-3 text-sm border-b pb-2">DATA KELAHIRAN</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Bayi (Jika Sudah Ada)</label>
+                            <input type="text" name="nik_bayi" value="<?= htmlspecialchars($dataKelahiran['nik_bayi'] ?? '') ?>" maxlength="16" placeholder="Boleh dikosongkan" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Lengkap Bayi <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_bayi" value="<?= htmlspecialchars($dataKelahiran['nama_bayi'] ?? '') ?>" required placeholder="Nama calon bayi / bayi" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Jenis Kelamin <span class="text-red-500">*</span></label>
+                            <select name="jenis_kelamin" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                                <option value="">-- Pilih --</option>
+                                <option value="L" <?= ($dataKelahiran['jenis_kelamin'] ?? '') === 'L' ? 'selected' : '' ?>>Laki-Laki</option>
+                                <option value="P" <?= ($dataKelahiran['jenis_kelamin'] ?? '') === 'P' ? 'selected' : '' ?>>Perempuan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tempat Dilahirkan <span class="text-red-500">*</span></label>
+                            <select name="tempat_dilahirkan" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                                <option value="">-- Pilih --</option>
+                                <?php foreach (['RS_RB' => 'RS / Rumah Bersalin', 'Puskesmas' => 'Puskesmas', 'Polindes' => 'Polindes', 'Rumah' => 'Rumah', 'Lainnya' => 'Lainnya'] as $k => $v): ?>
+                                    <option value="<?= $k ?>" <?= ($dataKelahiran['tempat_dilahirkan'] ?? '') === $k ? 'selected' : '' ?>><?= $v ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tempat Kelahiran (Kota/Kab) <span class="text-red-500">*</span></label>
+                            <input type="text" name="tempat_kelahiran" value="<?= htmlspecialchars($dataKelahiran['tempat_kelahiran'] ?? '') ?>" required placeholder="Misal: Tangerang" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Hari & Tanggal Lahir <span class="text-red-500">*</span></label>
+                            <input type="date" name="tanggal_lahir" value="<?= htmlspecialchars($dataKelahiran['tanggal_lahir'] ?? '') ?>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Pukul Lahir <span class="text-red-500">*</span></label>
+                            <input type="text" name="pukul" value="<?= htmlspecialchars($dataKelahiran['pukul'] ?? '') ?>" required placeholder="Format HH:MM (Misal: 08:30)" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Jenis Kelahiran <span class="text-red-500">*</span></label>
+                            <select name="jenis_kelahiran" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                                <option value="">-- Pilih --</option>
+                                <?php foreach (['Tunggal', 'Kembar 2', 'Kembar 3', 'Kembar 4', 'Lainnya'] as $v): ?>
+                                    <option value="<?= $v ?>" <?= ($dataKelahiran['jenis_kelahiran'] ?? '') === $v ? 'selected' : '' ?>><?= $v ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Kelahiran Ke <span class="text-red-500">*</span></label>
+                            <input type="number" name="kelahiran_ke" value="<?= htmlspecialchars($dataKelahiran['kelahiran_ke'] ?? '1') ?>" required min="1" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Penolong Kelahiran <span class="text-red-500">*</span></label>
+                            <select name="penolong_kelahiran" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                                <option value="">-- Pilih --</option>
+                                <?php foreach (['Dokter', 'Bidan/Perawat', 'Dukun', 'Lainnya'] as $v): ?>
+                                    <option value="<?= $v ?>" <?= ($dataKelahiran['penolong_kelahiran'] ?? '') === $v ? 'selected' : '' ?>><?= $v ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Berat Bayi (Kg) <span class="text-red-500">*</span></label>
+                            <input type="number" step="0.01" name="berat_bayi" value="<?= htmlspecialchars($dataKelahiran['berat_bayi'] ?? '') ?>" required placeholder="Misal: 3.15" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Panjang Bayi (Cm) <span class="text-red-500">*</span></label>
+                            <input type="number" name="panjang_bayi" value="<?= htmlspecialchars($dataKelahiran['panjang_bayi'] ?? '') ?>" required placeholder="Misal: 49" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                    </div>
+
+                <?php elseif ($jenis === 'kematian'): ?>
+                    <!-- KEMATIAN -->
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Step 2: Formulir F-2.01 Pencatatan Sipil Kematian</h3>
+                    <p class="text-sm text-slate-500 mb-6">Lengkapi data pelaporan pencatatan sipil kematian sesuai dengan data riil.</p>
+
+                    <!-- Data Saksi -->
+                    <h4 class="font-bold text-slate-700 mb-3 text-sm border-b pb-2">DATA SAKSI</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Saksi I <span class="text-red-500">*</span></label>
+                            <input type="text" name="nik_saksi_1" value="<?= htmlspecialchars($dataKematian['nik_saksi_1'] ?? '') ?>" required maxlength="16" placeholder="16 digit NIK Saksi 1" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Lengkap Saksi I <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_saksi_1" value="<?= htmlspecialchars($dataKematian['nama_saksi_1'] ?? '') ?>" required placeholder="Nama lengkap saksi 1" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Saksi II <span class="text-red-500">*</span></label>
+                            <input type="text" name="nik_saksi_2" value="<?= htmlspecialchars($dataKematian['nik_saksi_2'] ?? '') ?>" required maxlength="16" placeholder="16 digit NIK Saksi 2" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Lengkap Saksi II <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_saksi_2" value="<?= htmlspecialchars($dataKematian['nama_saksi_2'] ?? '') ?>" required placeholder="Nama lengkap saksi 2" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Data Orang Tua -->
+                    <h4 class="font-bold text-slate-700 mb-3 text-sm border-b pb-2">DATA ORANG TUA</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Ayah</label>
+                            <input type="text" name="nik_ayah" value="<?= htmlspecialchars($dataKematian['nik_ayah'] ?? '') ?>" maxlength="16" placeholder="16 digit NIK Ayah" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Ayah</label>
+                            <input type="text" name="nama_ayah" value="<?= htmlspecialchars($dataKematian['nama_ayah'] ?? '') ?>" placeholder="Nama lengkap ayah" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Ibu</label>
+                            <input type="text" name="nik_ibu" value="<?= htmlspecialchars($dataKematian['nik_ibu'] ?? '') ?>" maxlength="16" placeholder="16 digit NIK Ibu" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Ibu</label>
+                            <input type="text" name="nama_ibu" value="<?= htmlspecialchars($dataKematian['nama_ibu'] ?? '') ?>" placeholder="Nama lengkap ibu" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Data Kematian -->
+                    <h4 class="font-bold text-slate-700 mb-3 text-sm border-b pb-2">DATA KEMATIAN / JENAZAH</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">NIK Jenazah <span class="text-red-500">*</span></label>
+                            <input type="text" name="nik_jenazah" value="<?= htmlspecialchars($dataKematian['nik_jenazah'] ?? '') ?>" required maxlength="16" placeholder="16 digit NIK Alm/Almah" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nama Lengkap Jenazah <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_jenazah" value="<?= htmlspecialchars($dataKematian['nama_jenazah'] ?? '') ?>" required placeholder="Nama lengkap almarhum/almarhumah" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tanggal Kematian <span class="text-red-500">*</span></label>
+                            <input type="date" name="tanggal_kematian" value="<?= htmlspecialchars($dataKematian['tanggal_kematian'] ?? '') ?>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Pukul Kematian <span class="text-red-500">*</span></label>
+                            <input type="text" name="pukul" value="<?= htmlspecialchars($dataKematian['pukul'] ?? '') ?>" required placeholder="Format HH:MM (Misal: 23:45)" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Sebab Kematian <span class="text-red-500">*</span></label>
+                            <select name="sebab_kematian" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                                <option value="">-- Pilih --</option>
+                                <?php foreach (['Sakit biasa/tua', 'Wabah Penyakit', 'Kecelakaan', 'Kriminalitas', 'Bunuh Diri', 'Lainnya'] as $v): ?>
+                                    <option value="<?= $v ?>" <?= ($dataKematian['sebab_kematian'] ?? '') === $v ? 'selected' : '' ?>><?= $v ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tempat Kematian <span class="text-red-500">*</span></label>
+                            <input type="text" name="tempat_kematian" value="<?= htmlspecialchars($dataKematian['tempat_kematian'] ?? '') ?>" required placeholder="Misal: RSUD Tangerang, Rumah Duka, dll" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Yang Menerangkan <span class="text-red-500">*</span></label>
+                            <select name="yang_menerangkan" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">
+                                <option value="">-- Pilih --</option>
+                                <?php foreach (['Dokter', 'Tenaga Kesehatan', 'Kepolisian', 'Lainnya'] as $v): ?>
+                                    <option value="<?= $v ?>" <?= ($dataKematian['yang_menerangkan'] ?? '') === $v ? 'selected' : '' ?>><?= $v ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
                 <?php else: // KTP ?>
                     <h3 class="text-lg font-bold text-slate-800 mb-1">Step 2: Detail Layanan KTP-el</h3>
                     <p class="text-sm text-slate-500 mb-6">Pilih jenis permohonan KTP-el Anda.</p>
@@ -680,6 +881,22 @@
                 ['name' => 'Kartu Keluarga', 'note' => 'Wajib', 'icon' => 'family'],
                 ['name' => 'Surat Pengantar RT/RW', 'note' => 'Wajib', 'icon' => 'doc'],
                 ['name' => 'Pas Foto 3x4', 'note' => 'Opsional', 'icon' => 'photo'],
+            ];
+        } elseif ($jenis === 'kelahiran') {
+            $requiredDocs = [
+                ['name' => 'KTP', 'note' => 'Wajib', 'icon' => 'id'],
+                ['name' => 'Kartu Keluarga (KK)', 'note' => 'Wajib', 'icon' => 'family'],
+                ['name' => 'Buku Nikah', 'note' => 'Wajib', 'icon' => 'doc'],
+                ['name' => 'Surat Kelahiran Asli', 'note' => 'Wajib', 'icon' => 'doc'],
+                ['name' => 'Foto Selfie Orang Tua', 'note' => 'Wajib', 'icon' => 'photo'],
+                ['name' => 'Surat Pengantar RT/RW', 'note' => 'Wajib', 'icon' => 'doc'],
+            ];
+        } elseif ($jenis === 'kematian') {
+            $requiredDocs = [
+                ['name' => 'Surat Pengantar RT/RW', 'note' => 'Wajib', 'icon' => 'doc'],
+                ['name' => 'KTP', 'note' => 'Wajib', 'icon' => 'id'],
+                ['name' => 'Kartu Keluarga (KK)', 'note' => 'Wajib', 'icon' => 'family'],
+                ['name' => 'Surat Keterangan Kematian', 'note' => 'Wajib', 'icon' => 'doc'],
             ];
         } elseif ($jenis === 'kk') {
             $subKK = $dataKeluarga['sub_jenis_kk'] ?? '';
@@ -967,6 +1184,72 @@
                             </table>
                         </div>
                     <?php endif; ?>
+                <?php elseif ($jenis === 'kelahiran' && $dataKelahiran): ?>
+                    <div class="bg-white rounded-2xl border border-slate-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">👶 Data Kelahiran</h3>
+                            <a href="<?= baseUrl("form.php?id={$pengajuanId}&step=2") ?>" class="text-sm text-primary-600">Ubah</a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Nama Bayi</p>
+                                <p class="text-sm text-slate-800 font-medium"><?= htmlspecialchars($dataKelahiran['nama_bayi'] ?? '-') ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Jenis Kelamin</p>
+                                <p class="text-sm text-slate-800"><?= ($dataKelahiran['jenis_kelamin'] ?? '') === 'L' ? 'Laki-Laki' : 'Perempuan' ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Tempat, Tgl Lahir</p>
+                                <p class="text-sm text-slate-800"><?= htmlspecialchars(($dataKelahiran['tempat_kelahiran'] ?? '-') . ', ' . ($dataKelahiran['tanggal_lahir'] ? date('d M Y', strtotime($dataKelahiran['tanggal_lahir'])) : '-')) ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Nama Saksi</p>
+                                <p class="text-sm text-slate-800"><?= htmlspecialchars($dataKelahiran['nama_saksi'] ?? '-') ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Nama Ibu</p>
+                                <p class="text-sm text-slate-800"><?= htmlspecialchars($dataKelahiran['nama_ibu'] ?? '-') ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Nama Ayah</p>
+                                <p class="text-sm text-slate-800"><?= htmlspecialchars($dataKelahiran['nama_ayah'] ?? '-') ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php elseif ($jenis === 'kematian' && $dataKematian): ?>
+                    <div class="bg-white rounded-2xl border border-slate-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">💀 Data Kematian</h3>
+                            <a href="<?= baseUrl("form.php?id={$pengajuanId}&step=2") ?>" class="text-sm text-primary-600">Ubah</a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Nama Jenazah</p>
+                                <p class="text-sm text-slate-800 font-medium"><?= htmlspecialchars($dataKematian['nama_jenazah'] ?? '-') ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">NIK Jenazah</p>
+                                <p class="text-sm text-slate-800 font-mono"><?= htmlspecialchars($dataKematian['nik_jenazah'] ?? '-') ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Tanggal Wafat</p>
+                                <p class="text-sm text-slate-800"><?= $dataKematian['tanggal_kematian'] ? date('d M Y', strtotime($dataKematian['tanggal_kematian'])) : '-' ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Sebab Kematian</p>
+                                <p class="text-sm text-slate-800"><?= htmlspecialchars($dataKematian['sebab_kematian'] ?? '-') ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Saksi I</p>
+                                <p class="text-sm text-slate-800"><?= htmlspecialchars($dataKematian['nama_saksi_1'] ?? '-') ?></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Saksi II</p>
+                                <p class="text-sm text-slate-800"><?= htmlspecialchars($dataKematian['nama_saksi_2'] ?? '-') ?></p>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
                 <!-- Detail Permohonan -->
                 <div class="bg-white rounded-2xl border border-slate-100 p-6">

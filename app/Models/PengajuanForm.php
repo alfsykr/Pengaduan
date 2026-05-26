@@ -32,12 +32,20 @@ class PengajuanForm
 
         $user = currentUser();
         $jenis = $pengajuan['jenis_layanan'];
-        $jenisLabels = ['kk' => 'Kartu Keluarga (KK)', 'ktp' => 'KTP-el', 'pindah' => 'Surat Pindah'];
+        $jenisLabels = [
+            'kk' => 'Kartu Keluarga (KK)',
+            'ktp' => 'KTP-el',
+            'pindah' => 'Surat Pindah',
+            'kelahiran' => 'Akte Kelahiran',
+            'kematian' => 'Akte Kematian'
+        ];
 
         $dataKeluarga = null;
         $anggotaKeluarga = [];
         $dataPindah = null;
         $anggotaPindah = [];
+        $dataKelahiran = null;
+        $dataKematian = null;
         $dokumen = [];
 
         if ($jenis === 'kk') {
@@ -58,6 +66,14 @@ class PengajuanForm
                 $stmt->execute([$dataPindah['id']]);
                 $anggotaPindah = $stmt->fetchAll();
             }
+        } elseif ($jenis === 'kelahiran') {
+            $stmt = $db->prepare('SELECT * FROM data_kelahiran WHERE pengajuan_id = ?');
+            $stmt->execute([$pengajuanId]);
+            $dataKelahiran = $stmt->fetch();
+        } elseif ($jenis === 'kematian') {
+            $stmt = $db->prepare('SELECT * FROM data_kematian WHERE pengajuan_id = ?');
+            $stmt->execute([$pengajuanId]);
+            $dataKematian = $stmt->fetch();
         }
 
         $stmt = $db->prepare('SELECT * FROM dokumen WHERE pengajuan_id = ?');
@@ -66,6 +82,8 @@ class PengajuanForm
 
         if ($jenis === 'pindah') {
             $stepNames = ['Data Pribadi', 'Data Pindah', 'Keluarga Pindah', 'Unggah Dokumen', 'Review'];
+        } elseif ($jenis === 'kelahiran' || $jenis === 'kematian') {
+            $stepNames = ['Data Pribadi', 'Detail Kelahiran', 'Detail Layanan', 'Unggah Dokumen', 'Review'];
         } else {
             $stepNames = ['Data Pribadi', 'Data ' . ($jenis === 'kk' ? 'Keluarga' : 'Layanan'), 'Detail Layanan', 'Unggah Dokumen', 'Review'];
         }
@@ -82,6 +100,8 @@ class PengajuanForm
             'anggotaKeluarga' => $anggotaKeluarga,
             'dataPindah' => $dataPindah,
             'anggotaPindah' => $anggotaPindah,
+            'dataKelahiran' => $dataKelahiran,
+            'dataKematian' => $dataKematian,
             'dokumen' => $dokumen,
             'stepNames' => $stepNames,
         ];

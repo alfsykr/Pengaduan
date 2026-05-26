@@ -1,4 +1,4 @@
-﻿<!-- Breadcrumb -->
+<!-- Breadcrumb -->
 <nav class="flex items-center gap-2 text-sm mb-6 animate-fade-in">
     <a href="<?= baseUrl('index.php') ?>" class="text-slate-400 hover:text-slate-600">Layanan</a>
     <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -14,7 +14,7 @@
 </div>
 
 <!-- Service Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
 
     <!-- Kartu Keluarga -->
     <form method="POST" action="<?= baseUrl('app/Controllers/PengajuanController.php?action=create') ?>">
@@ -36,7 +36,7 @@
                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary-50 text-primary-600">3
                     Hari Kerja</span>
                 <svg class="w-5 h-5 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -64,7 +64,7 @@
                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-accent-50 text-accent-600">1
                     Hari Kerja</span>
                 <svg class="w-5 h-5 text-slate-300 group-hover:text-accent-500 group-hover:translate-x-1 transition-all"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -94,13 +94,68 @@
                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-violet-50 text-violet-600">2
                     Hari Kerja</span>
                 <svg class="w-5 h-5 text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-all"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
             </div>
         </button>
     </form>
+
+    <!-- Akte Kelahiran [NEW] -->
+    <form method="POST" action="<?= baseUrl('app/Controllers/PengajuanController.php?action=create') ?>">
+        <input type="hidden" name="jenis_layanan" value="kelahiran">
+        <button type="submit"
+            class="w-full text-left bg-white rounded-2xl border border-slate-100 p-6 card-hover group animate-fade-in animate-delay-4">
+            <div
+                class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors">
+                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Akte Kelahiran</h3>
+            <p class="text-sm text-slate-500 mb-4 leading-relaxed">Pengurusan Akte Kelahiran baru untuk bayi/anak baru lahir di wilayah kependudukan desa.</p>
+            <div class="flex items-center justify-between">
+                <span
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600">3
+                    Hari Kerja</span>
+                <svg class="w-5 h-5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </div>
+        </button>
+    </form>
+
+    <!-- Akte Kematian [NEW] -->
+    <form method="POST" action="<?= baseUrl('app/Controllers/PengajuanController.php?action=create') ?>">
+        <input type="hidden" name="jenis_layanan" value="kematian">
+        <button type="submit"
+            class="w-full text-left bg-white rounded-2xl border border-slate-100 p-6 card-hover group animate-fade-in animate-delay-4">
+            <div
+                class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center mb-4 group-hover:bg-rose-100 transition-colors">
+                <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2zM15 3v5h5" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Akte Kematian</h3>
+            <p class="text-sm text-slate-500 mb-4 leading-relaxed">Pengurusan Akte Kematian bagi warga yang telah meninggal dunia demi tertib administrasi.</p>
+            <div class="flex items-center justify-between">
+                <span
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-600">3
+                    Hari Kerja</span>
+                <svg class="w-5 h-5 text-slate-300 group-hover:text-rose-500 group-hover:translate-x-1 transition-all"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </div>
+        </button>
+    </form>
+
 </div>
 
 <!-- Bottom Stats -->

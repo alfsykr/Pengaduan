@@ -46,7 +46,7 @@ function handleCreate()
     }
 
     $jenisLayanan = $_POST['jenis_layanan'] ?? '';
-    if (!in_array($jenisLayanan, ['kk', 'ktp', 'pindah'])) {
+    if (!in_array($jenisLayanan, ['kk', 'ktp', 'pindah', 'kelahiran', 'kematian'])) {
         setFlash('danger', 'Jenis layanan tidak valid.');
         header('Location: ' . baseUrl('layanan.php'));
         exit;
@@ -76,6 +76,12 @@ function handleCreate()
         ]);
     } elseif ($jenisLayanan === 'pindah') {
         $stmt = $db->prepare("INSERT INTO data_pindah (pengajuan_id, alamat_asal, alamat_tujuan, jenis_kepindahan) VALUES (?, '', '', 'kepala_keluarga')");
+        $stmt->execute([$pengajuanId]);
+    } elseif ($jenisLayanan === 'kelahiran') {
+        $stmt = $db->prepare("INSERT INTO data_kelahiran (pengajuan_id) VALUES (?)");
+        $stmt->execute([$pengajuanId]);
+    } elseif ($jenisLayanan === 'kematian') {
+        $stmt = $db->prepare("INSERT INTO data_kematian (pengajuan_id) VALUES (?)");
         $stmt->execute([$pengajuanId]);
     }
 
@@ -130,6 +136,10 @@ function handleSaveStep()
                 $jenisPerm = $_POST['jenis_permohonan_ktp'] ?? 'baru';
                 $stmt = $db->prepare("UPDATE pengajuan_layanan SET jenis_permohonan_ktp=? WHERE id=?");
                 $stmt->execute([$jenisPerm, $pengajuanId]);
+            } elseif ($pengajuan['jenis_layanan'] === 'kelahiran') {
+                saveKelahiranData($db, $pengajuanId);
+            } elseif ($pengajuan['jenis_layanan'] === 'kematian') {
+                saveKematianData($db, $pengajuanId);
             }
             break;
 
@@ -740,4 +750,62 @@ function handleUploadProfileDokumen()
 
     echo json_encode(['success' => true, 'message' => 'Dokumen berhasil diunggah.']);
     exit;
+}
+
+function saveKelahiranData($db, $pengajuanId) {
+    $stmt = $db->prepare("UPDATE data_kelahiran SET 
+        nik_saksi = ?, nama_saksi = ?,
+        nik_ayah = ?, nama_ayah = ?, nik_ibu = ?, nama_ibu = ?,
+        nik_bayi = ?, nama_bayi = ?, jenis_kelamin = ?, tempat_dilahirkan = ?, 
+        tempat_kelahiran = ?, tanggal_lahir = ?, pukul = ?, jenis_kelahiran = ?, 
+        kelahiran_ke = ?, penolong_kelahiran = ?, berat_bayi = ?, panjang_bayi = ?
+        WHERE pengajuan_id = ?");
+    $stmt->execute([
+        $_POST['nik_saksi'] ?: null,
+        $_POST['nama_saksi'] ?: null,
+        $_POST['nik_ayah'] ?: null,
+        $_POST['nama_ayah'] ?: null,
+        $_POST['nik_ibu'] ?: null,
+        $_POST['nama_ibu'] ?: null,
+        $_POST['nik_bayi'] ?: null,
+        $_POST['nama_bayi'] ?: null,
+        $_POST['jenis_kelamin'] ?: null,
+        $_POST['tempat_dilahirkan'] ?: null,
+        $_POST['tempat_kelahiran'] ?: null,
+        !empty($_POST['tanggal_lahir']) ? $_POST['tanggal_lahir'] : null,
+        $_POST['pukul'] ?: null,
+        $_POST['jenis_kelahiran'] ?: null,
+        !empty($_POST['kelahiran_ke']) ? intval($_POST['kelahiran_ke']) : 1,
+        $_POST['penolong_kelahiran'] ?: null,
+        !empty($_POST['berat_bayi']) ? floatval($_POST['berat_bayi']) : null,
+        !empty($_POST['panjang_bayi']) ? intval($_POST['panjang_bayi']) : null,
+        $pengajuanId
+    ]);
+}
+
+function saveKematianData($db, $pengajuanId) {
+    $stmt = $db->prepare("UPDATE data_kematian SET 
+        nik_saksi_1 = ?, nama_saksi_1 = ?, nik_saksi_2 = ?, nama_saksi_2 = ?,
+        nik_ayah = ?, nama_ayah = ?, nik_ibu = ?, nama_ibu = ?,
+        nik_jenazah = ?, nama_jenazah = ?, tanggal_kematian = ?, pukul = ?, 
+        sebab_kematian = ?, tempat_kematian = ?, yang_menerangkan = ?
+        WHERE pengajuan_id = ?");
+    $stmt->execute([
+        $_POST['nik_saksi_1'] ?: null,
+        $_POST['nama_saksi_1'] ?: null,
+        $_POST['nik_saksi_2'] ?: null,
+        $_POST['nama_saksi_2'] ?: null,
+        $_POST['nik_ayah'] ?: null,
+        $_POST['nama_ayah'] ?: null,
+        $_POST['nik_ibu'] ?: null,
+        $_POST['nama_ibu'] ?: null,
+        $_POST['nik_jenazah'] ?: null,
+        $_POST['nama_jenazah'] ?: null,
+        !empty($_POST['tanggal_kematian']) ? $_POST['tanggal_kematian'] : null,
+        $_POST['pukul'] ?: null,
+        $_POST['sebab_kematian'] ?: null,
+        $_POST['tempat_kematian'] ?: null,
+        $_POST['yang_menerangkan'] ?: null,
+        $pengajuanId
+    ]);
 }
