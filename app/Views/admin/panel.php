@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if ($adminPage === 'dashboard'):
     // Recent activity
     $stmt = $db->prepare("SELECT p.*, u.nama_lengkap, u.avatar AS user_avatar FROM pengajuan_layanan p JOIN users u ON p.user_id = u.id WHERE p.status != 'draft' ORDER BY p.tanggal_pengajuan DESC LIMIT 6");
@@ -1056,4 +1056,443 @@ if ($adminPage === 'dashboard'):
         }
     </script>
 <?php endif; ?>
+
+<?php if ($adminPage === 'pengaduan'):
+    $statusFilter = $_GET['status'] ?? '';
+    $kategoriFilter = $_GET['kategori'] ?? '';
+    $search = $_GET['search'] ?? '';
+
+    $page = max(1, intval($_GET['p'] ?? 1));
+    $filters = [
+        'status' => $statusFilter,
+        'kategori' => $kategoriFilter,
+        'search' => $search,
+        'page' => $page
+    ];
+
+    $stats = \App\Models\PengaduanModel::getStatsForAdmin();
+    $list = \App\Models\PengaduanModel::listForAdmin($filters);
+    $items = $list['items'];
+    $total = $list['total'];
+    $totalPages = $list['totalPages'];
+    $perPage = $list['perPage'];
+    $offset = ($page - 1) * $perPage;
+
+    $statusColors = [
+        'proses' => 'text-indigo-600',
+        'selesai' => 'text-emerald-600',
+        'ditolak' => 'text-rose-600',
+    ];
+    $statusBadge = [
+        'proses' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        'selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200',
+    ];
+    $statusLabels = [
+        'proses' => 'Diproses',
+        'selesai' => 'Selesai',
+        'ditolak' => 'Ditolak',
+    ];
+    
+    $categoryBadge = [
+        'Keamanan' => 'bg-rose-50 text-rose-700 border-rose-200',
+        'Infrastruktur' => 'bg-blue-50 text-blue-700 border-blue-200',
+        'Kebersihan' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'Sosial' => 'bg-amber-50 text-amber-700 border-amber-200',
+        'Kesehatan' => 'bg-teal-50 text-teal-700 border-teal-200',
+        'Lainnya' => 'bg-slate-50 text-slate-700 border-slate-200',
+    ];
+    ?>
+
+    <div class="animate-fade-in space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">Daftar Pengaduan Warga</h2>
+                <p class="text-sm text-slate-500 mt-1">Kelola dan tinjau laporan pengaduan situasi desa/kota dari warga secara real-time.</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Total Laporan -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <p class="text-xs font-medium text-slate-500">Total Laporan</p>
+                <p class="text-4xl font-bold text-slate-950 mt-2"><?= $stats['total'] ?></p>
+            </div>
+            <!-- Dalam Proses -->
+            <div class="bg-white rounded-2xl border border-slate-200 border-l-4 border-l-blue-600 p-5 shadow-sm">
+                <p class="text-xs font-medium text-slate-500">Dalam Proses</p>
+                <p class="text-4xl font-bold text-slate-950 mt-2"><?= $stats['proses'] ?></p>
+            </div>
+            <!-- Selesai -->
+            <div class="bg-white rounded-2xl border border-slate-200 border-l-4 border-l-teal-700 p-5 shadow-sm">
+                <p class="text-xs font-medium text-slate-500">Selesai</p>
+                <p class="text-4xl font-bold text-slate-950 mt-2"><?= $stats['selesai'] ?></p>
+            </div>
+            <!-- Ditolak -->
+            <div class="bg-white rounded-2xl border border-slate-200 border-l-4 border-l-red-600 p-5 shadow-sm">
+                <p class="text-xs font-medium text-slate-500">Ditolak</p>
+                <p class="text-4xl font-bold text-slate-950 mt-2"><?= $stats['ditolak'] ?></p>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <form method="GET" action="<?= baseUrl('admin.php') ?>" class="bg-white rounded-2xl border border-slate-100 p-4 mb-6">
+            <input type="hidden" name="page" value="pengaduan">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Kategori</label>
+                    <select name="kategori" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                        <option value="">Semua Kategori</option>
+                        <option value="Keamanan" <?= $kategoriFilter === 'Keamanan' ? 'selected' : '' ?>>Keamanan</option>
+                        <option value="Infrastruktur" <?= $kategoriFilter === 'Infrastruktur' ? 'selected' : '' ?>>Infrastruktur</option>
+                        <option value="Kebersihan" <?= $kategoriFilter === 'Kebersihan' ? 'selected' : '' ?>>Kebersihan</option>
+                        <option value="Sosial" <?= $kategoriFilter === 'Sosial' ? 'selected' : '' ?>>Sosial</option>
+                        <option value="Kesehatan" <?= $kategoriFilter === 'Kesehatan' ? 'selected' : '' ?>>Kesehatan</option>
+                        <option value="Lainnya" <?= $kategoriFilter === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Status</label>
+                    <select name="status" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                        <option value="">Semua Status</option>
+                        <option value="proses" <?= $statusFilter === 'proses' ? 'selected' : '' ?>>Diproses</option>
+                        <option value="selesai" <?= $statusFilter === 'selesai' ? 'selected' : '' ?>>Selesai</option>
+                        <option value="ditolak" <?= $statusFilter === 'ditolak' ? 'selected' : '' ?>>Ditolak</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Cari</label>
+                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Judul / Deskripsi / Nama Warga"
+                        class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm">
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit"
+                        class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-xl text-sm flex items-center justify-center gap-1">
+                        Terapkan
+                    </button>
+                    <a href="<?= baseUrl('admin.php?page=pengaduan') ?>"
+                        class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 flex items-center justify-center">
+                        Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Table -->
+        <div class="bg-white rounded-2xl border border-slate-100">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800">Daftar Laporan Pengaduan</h3>
+                <span class="text-xs text-slate-400">Menampilkan <?= $offset + 1 ?>-<?= min($offset + $perPage, $total) ?> dari <?= $total ?> entri</span>
+            </div>
+            <?php if (empty($items)): ?>
+                <div class="p-12 text-center">
+                    <p class="text-slate-400">Tidak ada data laporan pengaduan.</p>
+                </div>
+            <?php else: ?>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left border-b border-slate-100">
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-400 uppercase">No. Pengaduan</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Nama Pengirim</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Kategori</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Judul Pengaduan</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Tanggal</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Status</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-400 uppercase text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 text-sm text-slate-600">
+                            <?php foreach ($items as $item): ?>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <span class="font-mono text-slate-600 font-bold"><?= htmlspecialchars($item['no_pengaduan']) ?></span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <?= htmlUserAvatarRing([
+                                                'id' => (int) ($item['user_id'] ?? 0),
+                                                'nama_lengkap' => $item['nama_lengkap'] ?? '',
+                                                'avatar' => $item['avatar'] ?? '',
+                                            ]) ?>
+                                            <div>
+                                                <p class="font-semibold text-slate-800"><?= htmlspecialchars($item['nama_lengkap']) ?></p>
+                                                <p class="text-[10px] text-slate-400">NIK: <?= htmlspecialchars($item['nik']) ?></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex px-2.5 py-1 rounded-lg text-xs font-semibold border <?= $categoryBadge[$item['kategori']] ?? 'bg-slate-50' ?>">
+                                            <?= htmlspecialchars($item['kategori']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 max-w-xs truncate">
+                                        <p class="font-semibold text-slate-800 truncate"><?= htmlspecialchars($item['judul']) ?></p>
+                                        <p class="text-xs text-slate-400 truncate"><?= htmlspecialchars($item['deskripsi']) ?></p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <?= date('d M Y, H:i', strtotime($item['created_at'])) ?>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="flex items-center gap-1.5 text-sm font-medium <?= $statusColors[$item['status']] ?>">
+                                            <span class="w-2 h-2 rounded-full bg-current"></span>
+                                            <?= $statusLabels[$item['status']] ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <a href="<?= baseUrl('admin.php?page=detail_pengaduan&id=' . $item['id']) ?>"
+                                           class="text-sm font-medium text-primary-600 hover:text-primary-700">Tinjau</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <?php if ($totalPages > 1): ?>
+                    <div class="flex items-center justify-between px-6 py-4 border-t border-slate-100">
+                        <div class="flex items-center gap-1">
+                            <?php if ($page > 1): ?>
+                                <a href="<?= baseUrl("admin.php?page=pengaduan&p=" . ($page - 1) . "&kategori=" . urlencode($kategoriFilter) . "&status=" . urlencode($statusFilter) . "&search=" . urlencode($search)) ?>"
+                                   class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Previous</a>
+                            <?php endif; ?>
+                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                <a href="<?= baseUrl("admin.php?page=pengaduan&p=$i&kategori=" . urlencode($kategoriFilter) . "&status=" . urlencode($statusFilter) . "&search=" . urlencode($search)) ?>"
+                                   class="w-8 h-8 rounded-lg flex items-center justify-center text-sm <?= $i === $page ? 'bg-primary-600 text-white' : 'text-slate-500 hover:bg-slate-100' ?>"><?= $i ?></a>
+                            <?php endfor; ?>
+                            <?php if ($page < $totalPages): ?>
+                                <a href="<?= baseUrl("admin.php?page=pengaduan&p=" . ($page + 1) . "&kategori=" . urlencode($kategoriFilter) . "&status=" . urlencode($statusFilter) . "&search=" . urlencode($search)) ?>"
+                                   class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Next</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($adminPage === 'detail_pengaduan'):
+    $id = intval($_GET['id'] ?? 0);
+    $detail = \App\Models\PengaduanModel::getDetail($id);
+    
+    if (!$detail) {
+        setFlash('danger', 'Detail pengaduan tidak ditemukan.');
+        header('Location: ' . baseUrl('admin.php?page=pengaduan'));
+        exit;
+    }
+    
+    $p = $detail['complaint'];
+    $photos = $detail['photos'];
+    
+    $statusColors = [
+        'proses' => 'text-indigo-600',
+        'selesai' => 'text-emerald-600',
+        'ditolak' => 'text-rose-600',
+    ];
+    $statusBadge = [
+        'proses' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        'selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200',
+    ];
+    $statusLabels = [
+        'proses' => 'Diproses',
+        'selesai' => 'Selesai',
+        'ditolak' => 'Ditolak',
+    ];
+    ?>
+
+    <!-- Back + Title -->
+    <div class="flex items-center gap-4 mb-6">
+        <a href="<?= baseUrl('admin.php?page=pengaduan') ?>"
+            class="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors">
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div class="flex-1">
+            <h2 class="text-xl font-bold text-slate-800">Detail Pengaduan Warga</h2>
+        </div>
+        <span class="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-mono font-semibold">
+            <?= htmlspecialchars($p['no_pengaduan']) ?>
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left: Data content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Data Pengirim -->
+            <div class="bg-white rounded-2xl border border-slate-100 p-6">
+                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Identitas Pelapor
+                </h3>
+                <div class="flex flex-col sm:flex-row gap-5 pb-6 border-b border-slate-100 mb-5">
+                    <div class="shrink-0">
+                        <?= htmlUserAvatarRing([
+                            'id' => (int) ($p['user_id'] ?? 0),
+                            'nama_lengkap' => $p['nama_lengkap'] ?? '',
+                            'avatar' => $p['avatar'] ?? '',
+                        ], 'w-16 h-16', 'text-md') ?>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Nama Pelapor</p>
+                        <h4 class="text-lg font-bold text-slate-800 uppercase"><?= htmlspecialchars($p['nama_lengkap']) ?></h4>
+                        <p class="text-xs text-slate-500 font-mono mt-1">NIK: <?= htmlspecialchars($p['nik']) ?></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase mb-1">No. Telpon / HP</p>
+                        <p class="text-sm font-semibold text-slate-700"><?= htmlspecialchars($p['no_hp'] ?: '-') ?></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase mb-1">Alamat Email</p>
+                        <p class="text-sm font-semibold text-slate-700"><?= htmlspecialchars($p['email']) ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Isi Laporan -->
+            <div class="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-50">
+                    <h3 class="text-base font-bold text-slate-800">Isi Pengaduan</h3>
+                    <span class="inline-flex px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold rounded-lg">
+                        Kategori: <?= htmlspecialchars($p['kategori']) ?>
+                    </span>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-slate-800 mb-2"><?= htmlspecialchars($p['judul']) ?></h4>
+                    <p class="text-sm text-slate-600 leading-relaxed whitespace-pre-line"><?= htmlspecialchars($p['deskripsi']) ?></p>
+                </div>
+
+                <!-- Lokasi -->
+                <div class="pt-4 border-t border-slate-50 space-y-3">
+                    <p class="text-xs font-bold text-slate-400 uppercase mb-2">📍 Lokasi Kejadian</p>
+                    <p class="text-sm font-semibold text-slate-700 leading-snug"><?= htmlspecialchars($p['lokasi']) ?></p>
+                    <!-- Mini Map -->
+                    <div class="rounded-xl overflow-hidden border border-slate-200 h-48 bg-slate-100 relative shadow-sm">
+                        <div id="admin-detail-map" class="w-full h-full z-10"></div>
+                    </div>
+                </div>
+
+                <!-- Leaflet CSS & JS -->
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var lat = parseFloat(<?= json_encode($p['latitude']) ?>);
+                        var lng = parseFloat(<?= json_encode($p['longitude']) ?>);
+                        var lokasiText = <?= json_encode($p['lokasi']) ?>;
+                        
+                        function initMap(mapLat, mapLng) {
+                            var map = L.map('admin-detail-map', {
+                                zoomControl: true,
+                                scrollWheelZoom: false
+                            }).setView([mapLat, mapLng], 16);
+                            
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: '© OpenStreetMap contributors'
+                            }).addTo(map);
+                            
+                            L.marker([mapLat, mapLng]).addTo(map);
+                            
+                            setTimeout(function() {
+                                map.invalidateSize();
+                            }, 200);
+                        }
+                        
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            initMap(lat, lng);
+                        } else {
+                            // Fallback to geocoding address
+                            var url = "https://photon.komoot.io/api/?q=" + encodeURIComponent(lokasiText) + "&limit=1";
+                            fetch(url)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data && data.features && data.features.length > 0) {
+                                        var pt = data.features[0].geometry.coordinates;
+                                        initMap(pt[1], pt[0]);
+                                    } else {
+                                        initMap(-6.2088, 106.8456); // default to Jakarta
+                                    }
+                                })
+                                .catch(() => {
+                                    initMap(-6.2088, 106.8456);
+                                });
+                        }
+                    });
+                </script>
+            </div>
+
+            <!-- Lampiran Foto -->
+            <div class="bg-white rounded-2xl border border-slate-100 p-6">
+                <h3 class="text-base font-bold text-slate-800 mb-4">🖼️ Foto Bukti Kejadian</h3>
+                <?php if (empty($photos)): ?>
+                    <p class="text-sm text-slate-400 italic text-center py-6">Tidak ada lampiran foto bukti.</p>
+                <?php else: ?>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <?php foreach ($photos as $photo): ?>
+                            <a href="<?= baseUrl('uploads/pengaduan/' . htmlspecialchars($photo['nama_file'])) ?>" target="_blank"
+                               class="aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm block hover:opacity-95 transition-opacity">
+                                <img src="<?= baseUrl('uploads/pengaduan/' . htmlspecialchars($photo['nama_file'])) ?>" alt="Bukti Foto" class="w-full h-full object-cover">
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Right Side: Status Update -->
+        <div class="space-y-6">
+            <!-- Status Terakhir -->
+            <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase font-semibold mb-1">Status Laporan</p>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold border <?= $statusBadge[$p['status']] ?>">
+                        <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                        <?= $statusLabels[$p['status']] ?>
+                    </span>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-slate-400 uppercase font-semibold mb-1">Tanggal Masuk</p>
+                    <p class="text-xs text-slate-700 font-semibold"><?= date('d M Y', strtotime($p['created_at'])) ?></p>
+                </div>
+            </div>
+
+            <!-- Form Tindakan Admin -->
+            <div class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
+                <h3 class="font-bold text-slate-800 text-base">✏️ Tindak Lanjut Petugas</h3>
+                <form method="POST" action="<?= baseUrl('app/Controllers/PengaduanController.php?action=update_status') ?>" class="space-y-4">
+                    <input type="hidden" name="pengaduan_id" value="<?= $p['id'] ?>">
+                    
+                    <div>
+                        <label for="status" class="block text-xs font-semibold text-slate-400 uppercase mb-2">Perbarui Status</label>
+                        <select name="status" id="status" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:border-primary-500">
+                            <option value="proses" <?= $p['status'] === 'proses' ? 'selected' : '' ?>>Diproses</option>
+                            <option value="selesai" <?= $p['status'] === 'selesai' ? 'selected' : '' ?>>Selesai (Terselesaikan)</option>
+                            <option value="ditolak" <?= $p['status'] === 'ditolak' ? 'selected' : '' ?>>Ditolak (Tidak Valid)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="catatan_admin" class="block text-xs font-semibold text-slate-400 uppercase mb-2">Catatan Tindak Lanjut / Alasan</label>
+                        <textarea name="catatan_admin" id="catatan_admin" rows="4" placeholder="Tuliskan catatan tindak lanjut dari petugas desa..."
+                                  class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary-500 bg-slate-50/30"><?= htmlspecialchars($p['catatan_admin'] ?? '') ?></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-primary-700 hover:bg-primary-800 text-white font-bold text-sm rounded-xl transition-all duration-150 shadow-md">
+                        Simpan Perubahan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
 

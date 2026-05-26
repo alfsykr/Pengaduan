@@ -36,6 +36,15 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             Layanan
         </a>
 
+        <a href="<?= baseUrl('pengaduan.php') ?>"
+            class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium <?= ($currentPage === 'pengaduan' || $currentPage === 'buat_pengaduan') ? 'active text-white' : 'text-primary-200 hover:text-white' ?>">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Pengaduan
+        </a>
+
         <a href="<?= baseUrl('riwayat.php') ?>"
             class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium <?= $currentPage === 'riwayat' ? 'active text-white' : 'text-primary-200 hover:text-white' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,6 +109,8 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     class="app-topnav-link text-sm font-medium inline-block <?= $currentPage === 'index' ? 'text-primary-700' : 'text-slate-500 hover:text-slate-700' ?>">Beranda</a>
                 <a href="<?= baseUrl('layanan.php') ?>"
                     class="app-topnav-link text-sm font-medium inline-block <?= ($currentPage === 'layanan' || $currentPage === 'form') ? 'text-primary-700' : 'text-slate-500 hover:text-slate-700' ?>">Layanan</a>
+                <a href="<?= baseUrl('pengaduan.php') ?>"
+                    class="app-topnav-link text-sm font-medium inline-block <?= ($currentPage === 'pengaduan' || $currentPage === 'buat_pengaduan') ? 'text-primary-700' : 'text-slate-500 hover:text-slate-700' ?>">Pengaduan</a>
                 <a href="<?= baseUrl('riwayat.php') ?>"
                     class="app-topnav-link text-sm font-medium inline-block <?= $currentPage === 'riwayat' ? 'text-primary-700' : 'text-slate-500 hover:text-slate-700' ?>">Riwayat</a>
                 <a href="<?= baseUrl('settings.php') ?>"
