@@ -141,7 +141,7 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                                 <?= htmlspecialchars($user['email'] ?? '') ?>
                             </p>
                         </div>
-                        <?php if (isAdmin()): ?>
+                        <?php if (isAdmin() || isLurah()): ?>
                             <a href="<?= baseUrl('admin.php') ?>"
                                 class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-transform duration-150 active:scale-[0.98]">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

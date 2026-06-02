@@ -12,7 +12,7 @@ class PengajuanForm
      */
     public static function loadPageContext(): array
     {
-        requireLogin();
+        requireCitizen();
 
         $db = getDB();
         $pengajuanId = intval($_GET['id'] ?? 0);

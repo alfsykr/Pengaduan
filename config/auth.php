@@ -27,6 +27,22 @@ function isAdmin()
 }
 
 /**
+ * Check if user is lurah
+ */
+function isLurah()
+{
+    return isLoggedIn() && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'lurah';
+}
+
+/**
+ * Check if user is admin or lurah
+ */
+function isAdminOrLurah()
+{
+    return isAdmin() || isLurah();
+}
+
+/**
  * Get current user data. Set $refresh true setelah memperbarui profil di database.
  */
 function currentUser(bool $refresh = false)
@@ -78,12 +94,37 @@ function requireAdmin()
 }
 
 /**
+ * Require admin or lurah - redirect if neither
+ */
+function requireAdminOrLurah()
+{
+    requireLogin();
+    if (!isAdminOrLurah()) {
+        setFlash('danger', 'Anda tidak memiliki akses ke halaman ini.');
+        header('Location: ' . baseUrl('index.php'));
+        exit;
+    }
+}
+
+/**
+ * Require citizen role - redirect admin or lurah to admin panel
+ */
+function requireCitizen()
+{
+    requireLogin();
+    if (isAdmin() || isLurah()) {
+        header('Location: ' . baseUrl('admin.php'));
+        exit;
+    }
+}
+
+/**
  * Redirect logged-in users away from login/register pages
  */
 function redirectIfLoggedIn()
 {
     if (isLoggedIn()) {
-        if (isAdmin()) {
+        if (isAdmin() || isLurah()) {
             header('Location: ' . baseUrl('admin.php'));
         } else {
             header('Location: ' . baseUrl('index.php'));

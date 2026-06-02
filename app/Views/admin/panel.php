@@ -616,12 +616,12 @@ if ($adminPage === 'dashboard'):
     $perPage = 10;
     $offset = ($page - 1) * $perPage;
 
-    $where = 'WHERE role = ?';
-    $params = ['user'];
+    $where = '';
+    $params = [];
     if ($userSearch !== '') {
-        $where .= ' AND (nama_lengkap LIKE ? OR nik LIKE ? OR email LIKE ? OR IFNULL(no_hp, \'\') LIKE ?)';
+        $where .= ' WHERE (nama_lengkap LIKE ? OR nik LIKE ? OR email LIKE ? OR IFNULL(no_hp, \'\') LIKE ? OR role LIKE ?)';
         $like = '%' . $userSearch . '%';
-        array_push($params, $like, $like, $like, $like);
+        array_push($params, $like, $like, $like, $like, $like);
     }
 
     $stmt = $db->prepare("SELECT COUNT(*) AS total FROM users $where");
@@ -629,7 +629,7 @@ if ($adminPage === 'dashboard'):
     $totalUsersList = (int) $stmt->fetch()['total'];
     $totalUserPages = max(1, (int) ceil($totalUsersList / $perPage));
 
-    $stmt = $db->prepare("SELECT id, nama_lengkap, nik, email, no_hp, avatar, created_at FROM users $where ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
+    $stmt = $db->prepare("SELECT id, nama_lengkap, nik, email, no_hp, avatar, role, created_at FROM users $where ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
     $stmt->execute($params);
     $registeredUsers = $stmt->fetchAll();
 
@@ -684,6 +684,8 @@ if ($adminPage === 'dashboard'):
                             <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Email</th>
                             <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase">No. HP</th>
                             <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Tgl. Daftar</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Role</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
@@ -716,6 +718,26 @@ if ($adminPage === 'dashboard'):
                                     echo ($__tsc !== false) ? date('d M Y', $__tsc) : '-';
                                     ?>
                                 </td>
+                                <td class="px-6 py-4">
+                                    <?php if ($ru['role'] === 'admin'): ?>
+                                        <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Admin</span>
+                                    <?php elseif ($ru['role'] === 'lurah'): ?>
+                                        <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">Lurah</span>
+                                    <?php else: ?>
+                                        <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Masyarakat</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-600">
+                                    <?php if ((int)$ru['id'] !== (int)$_SESSION['user_id']): ?>
+                                        <button type="button" 
+                                                onclick="openEditRoleModal(<?= $ru['id'] ?>, <?= htmlspecialchars(json_encode($ru['nama_lengkap'])) ?>, '<?= $ru['role'] ?>')"
+                                                class="text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
+                                            Ubah Role
+                                        </button>
+                                    <?php else: ?>
+                                        <span class="text-xs text-slate-400 italic">Anda sendiri</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -743,6 +765,62 @@ if ($adminPage === 'dashboard'):
         <?php endif; ?>
     </div>
     </div>
+
+    <!-- Modal Edit Role -->
+    <div id="edit-role-modal" class="fixed inset-0 z-[120] hidden" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeEditRoleModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 bg-white rounded-2xl shadow-xl border border-slate-100 animate-fade-in z-50">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-800">Ubah Role Pengguna</h3>
+                <button type="button" onclick="closeEditRoleModal()" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <form action="<?= baseUrl('app/Controllers/AdminController.php') ?>" method="POST" class="space-y-4">
+                <input type="hidden" name="action" value="update_user_role">
+                <input type="hidden" name="user_id" id="edit-role-user-id">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-2">Nama Pengguna</label>
+                    <input type="text" id="edit-role-user-name" readonly tabindex="-1"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-500 bg-slate-50 cursor-not-allowed">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-2" for="edit-role-select">Pilih Role Baru</label>
+                    <select name="role" id="edit-role-select" required
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+                        <option value="user">Masyarakat (User)</option>
+                        <option value="lurah">Lurah</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeEditRoleModal()"
+                        class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors">Batal</button>
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Edit Role Modal -->
+    <script>
+        function openEditRoleModal(id, nama, role) {
+            document.getElementById('edit-role-user-id').value = id;
+            document.getElementById('edit-role-user-name').value = nama;
+            document.getElementById('edit-role-select').value = role;
+            document.getElementById('edit-role-modal').classList.remove('hidden');
+        }
+
+        function closeEditRoleModal() {
+            document.getElementById('edit-role-modal').classList.add('hidden');
+        }
+    </script>
 
 <?php endif; ?>
 
@@ -792,7 +870,7 @@ if ($adminPage === 'dashboard'):
                     <div class="text-center mb-5">
                         <h3 class="text-lg font-bold text-slate-800">
                             <?= htmlspecialchars($user['nama_lengkap'] ?? 'Administrator') ?></h3>
-                        <p class="text-xs text-slate-500 mt-1">Administrator Utama • NIP/NIK:
+                        <p class="text-xs text-slate-500 mt-1"><?= isLurah() ? 'Lurah Desa' : 'Administrator Utama' ?> • NIP/NIK:
                             <?= htmlspecialchars($user['nik'] ?? '-') ?></p>
                     </div>
 
@@ -812,7 +890,7 @@ if ($adminPage === 'dashboard'):
                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
                                 </path>
                             </svg>
-                            <span class="text-slate-600 truncate">Akses Level: Super Admin</span>
+                            <span class="text-slate-600 truncate">Akses Level: <?= isLurah() ? 'Lurah' : 'Super Admin' ?></span>
                         </div>
                     </div>
                 </div>
@@ -827,7 +905,7 @@ if ($adminPage === 'dashboard'):
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
-                        Profil Admin
+                        <?= isLurah() ? 'Profil Lurah' : 'Profil Admin' ?>
                     </button>
                     <button type="button" onclick="switchTab('keamanan')" id="btn-keamanan"
                         class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ease-out will-change-transform active:scale-[0.98] text-slate-500 hover:bg-slate-50 hover:text-slate-700">
@@ -838,6 +916,7 @@ if ($adminPage === 'dashboard'):
                         </svg>
                         Keamanan & Kata Sandi
                     </button>
+                    <?php if (!isLurah()): ?>
                     <button type="button" onclick="switchTab('manajemen')" id="btn-manajemen"
                         class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ease-out will-change-transform active:scale-[0.98] text-slate-500 hover:bg-slate-50 hover:text-slate-700">
                         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -847,6 +926,7 @@ if ($adminPage === 'dashboard'):
                         </svg>
                         Manajemen Pengguna
                     </button>
+                    <?php endif; ?>
 
                     <div class="pt-4 mt-2 border-t border-slate-100">
                         <a href="<?= baseUrl('app/Controllers/AuthController.php?action=logout') ?>"
@@ -937,25 +1017,26 @@ if ($adminPage === 'dashboard'):
                     <h3 class="text-lg font-bold text-slate-800">Keamanan & Kata Sandi</h3>
                 </div>
 
-                <form>
+                <form method="POST" action="<?= baseUrl('app/Controllers/AdminController.php') ?>">
+                    <input type="hidden" name="action" value="change_password">
                     <div class="space-y-5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-2">Kata Sandi Saat Ini</label>
-                            <input type="password" value="********"
+                            <input type="password" name="current_password" required
                                 class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                                 placeholder="••••••••">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-500 mb-2">Kata Sandi Baru</label>
-                                <input type="password"
+                                <input type="password" name="new_password" required minlength="8"
                                     class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                                     placeholder="••••••••">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-500 mb-2">Konfirmasi Kata Sandi
                                     Baru</label>
-                                <input type="password"
+                                <input type="password" name="confirm_password" required minlength="8"
                                     class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                                     placeholder="••••••••">
                             </div>
@@ -973,9 +1054,9 @@ if ($adminPage === 'dashboard'):
                     </div>
 
                     <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-slate-100">
-                        <button type="button"
+                        <button type="reset"
                             class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50">Batalkan</button>
-                        <button type="button" onclick="alert('Demo: Kata sandi berhasil diubah')"
+                        <button type="submit"
                             class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -989,6 +1070,7 @@ if ($adminPage === 'dashboard'):
             </div>
 
             <!-- TAB: Manajemen Pengguna / Reset Password -->
+            <?php if (!isLurah()): ?>
             <div id="tab-manajemen" class="settings-tab hidden bg-white rounded-2xl border border-slate-100 p-6 md:p-8">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
                     <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1027,6 +1109,7 @@ if ($adminPage === 'dashboard'):
                     </div>
                 </form>
             </div>
+            <?php endif; ?>
 
         </div>
     </div>

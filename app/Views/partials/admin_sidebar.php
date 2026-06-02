@@ -63,6 +63,7 @@ $user = currentUser();
             Arsip
         </a>
 
+        <?php if (!isLurah()): ?>
         <a href="<?= baseUrl('admin.php?page=users') ?>"
             class="admin-sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium <?= $adminPage === 'users' ? 'is-active bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
             <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,6 +72,7 @@ $user = currentUser();
             </svg>
             Manajemen User
         </a>
+        <?php endif; ?>
 
         <a href="<?= baseUrl('admin.php?page=settings') ?>"
             class="admin-sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium <?= $adminPage === 'settings' ? 'is-active bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
@@ -86,17 +88,27 @@ $user = currentUser();
 
     <!-- Admin Profile -->
     <div class="px-4 py-4 border-t border-slate-100">
-        <div class="flex items-center gap-3">
-            <div
-                class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold">
-                <?= strtoupper(substr($user['nama_lengkap'] ?? 'A', 0, 1)) ?>
+        <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-3 min-w-0">
+                <div
+                    class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                    <?= strtoupper(substr($user['nama_lengkap'] ?? 'A', 0, 1)) ?>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm font-semibold text-slate-800 truncate">
+                        <?= htmlspecialchars($user['nama_lengkap'] ?? 'Admin') ?>
+                    </p>
+                    <p class="text-[10px] text-slate-400 font-medium"><?= isLurah() ? 'Lurah' : 'Petugas Layanan' ?></p>
+                </div>
             </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-slate-800 truncate">
-                    <?= htmlspecialchars($user['nama_lengkap'] ?? 'Admin') ?>
-                </p>
-                <p class="text-[10px] text-slate-400 font-medium">Petugas Layanan</p>
-            </div>
+            <a href="<?= baseUrl('app/Controllers/AuthController.php?action=logout') ?>" 
+               class="p-2 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors shrink-0" 
+               title="Keluar">
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+            </a>
         </div>
     </div>
 </aside>
