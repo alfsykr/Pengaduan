@@ -22,7 +22,7 @@ switch ($action) {
 
 function handleCreate()
 {
-    requireLogin();
+    requireCitizen();
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: ' . baseUrl('pengaduan.php'));
         exit;
@@ -106,7 +106,7 @@ function handleCreate()
 
 function handleUpdateStatus()
 {
-    requireAdmin();
+    requireAdminOrLurah();
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: ' . baseUrl('admin.php?page=pengaduan'));
         exit;

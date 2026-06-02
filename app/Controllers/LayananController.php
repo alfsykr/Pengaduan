@@ -6,7 +6,7 @@ class LayananController
 {
     public static function index(): void
     {
-        requireLogin();
+        requireCitizen();
         $pageTitle = 'Layanan';
         partial('header');
         partial('sidebar');

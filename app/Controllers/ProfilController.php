@@ -8,7 +8,7 @@ class ProfilController
 {
     public static function handle(): void
     {
-        requireLogin();
+        requireCitizen();
         $pageTitle = 'Data Diri';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_profile') {

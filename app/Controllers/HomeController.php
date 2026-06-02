@@ -8,7 +8,7 @@ class HomeController
 {
     public static function index(): void
     {
-        requireLogin();
+        requireCitizen();
         $pageTitle = 'Beranda';
         $userId = (int) $_SESSION['user_id'];
         extract(Pengajuan::dashboardForUser($userId));

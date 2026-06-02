@@ -8,7 +8,7 @@ class RiwayatController
 {
     public static function index(): void
     {
-        requireLogin();
+        requireCitizen();
         $pageTitle = 'Riwayat';
         extract(Pengajuan::riwayatPageForUser((int) $_SESSION['user_id'], $_GET));
 

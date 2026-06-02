@@ -8,7 +8,7 @@ class SettingsController
 {
     public static function handle(): void
     {
-        requireLogin();
+        requireCitizen();
         $pageTitle = 'Pengaturan';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

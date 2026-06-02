@@ -39,7 +39,7 @@ switch ($action) {
 
 function handleCreate()
 {
-    requireLogin();
+    requireCitizen();
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: ' . baseUrl('layanan.php'));
         exit;
@@ -91,7 +91,7 @@ function handleCreate()
 
 function handleSaveStep()
 {
-    requireLogin();
+    requireCitizen();
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: ' . baseUrl('index.php'));
         exit;
@@ -365,7 +365,7 @@ function saveAnggotaPindah($db, $pengajuanId)
 
 function handleSubmit()
 {
-    requireLogin();
+    requireCitizen();
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: ' . baseUrl('index.php'));
         exit;
@@ -396,7 +396,7 @@ function handleSubmit()
 
 function handleUploadDokumen()
 {
-    requireLogin();
+    requireCitizen();
     header('Content-Type: application/json');
 
     $pengajuanId = intval($_POST['pengajuan_id'] ?? 0);
@@ -501,7 +501,7 @@ function handleUploadDokumen()
 
 function handleDeleteDokumen()
 {
-    requireLogin();
+    requireCitizen();
     header('Content-Type: application/json');
 
     $dokumenId = intval($_POST['dokumen_id'] ?? 0);
@@ -533,7 +533,7 @@ function handleDeleteDokumen()
 
 function handleReplaceDokumen()
 {
-    requireLogin();
+    requireCitizen();
     header('Content-Type: application/json');
 
     $dokumenId = intval($_POST['dokumen_id'] ?? 0);
@@ -619,7 +619,7 @@ function handleReplaceDokumen()
 
 function handleDeleteProfileDokumen()
 {
-    requireLogin();
+    requireCitizen();
     header('Content-Type: application/json');
 
     $docKey = strtolower(trim($_POST['doc_key'] ?? ''));
@@ -661,7 +661,7 @@ function handleDeleteProfileDokumen()
 
 function handleUploadProfileDokumen()
 {
-    requireLogin();
+    requireCitizen();
     header('Content-Type: application/json');
 
     $docKey = strtolower(trim($_POST['doc_key'] ?? ''));
