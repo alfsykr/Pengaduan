@@ -9,11 +9,17 @@ class AdminPanelController
 {
     public static function show(): void
     {
-        requireAdmin();
+        requireAdminOrLurah();
 
         $pageTitle = 'Admin Panel';
         $db = getDB();
         $adminPage = $_GET['page'] ?? 'dashboard';
+
+        if (isLurah() && in_array($adminPage, ['users'], true)) {
+            setFlash('danger', 'Anda tidak memiliki akses ke halaman ini.');
+            header('Location: ' . baseUrl('admin.php'));
+            exit;
+        }
 
         $totalPending = $db->query("SELECT COUNT(*) as c FROM pengajuan_layanan WHERE status = 'pending'")->fetch()['c'];
         $totalProses = $db->query("SELECT COUNT(*) as c FROM pengajuan_layanan WHERE status = 'diproses'")->fetch()['c'];

@@ -8,10 +8,14 @@ class DetailController
 {
     public static function show(): void
     {
-        requireLogin();
+        $isAdminView = (isAdmin() || isLurah()) && isset($_GET['admin']);
+        if ($isAdminView) {
+            requireAdminOrLurah();
+        } else {
+            requireCitizen();
+        }
         $pageTitle = 'Detail Pengajuan';
         $id = intval($_GET['id'] ?? 0);
-        $isAdminView = isAdmin() && isset($_GET['admin']);
 
         $ctx = Pengajuan::detailContext($id, $isAdminView, (int) $_SESSION['user_id']);
         if ($ctx === null) {

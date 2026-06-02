@@ -48,7 +48,8 @@ try {
         'migration_ktp.sql',                  // KTP column adjustments
         'migration_pindah.sql',               // Pindah domisili tables & relations
         'migration_kelahiran_kematian.sql',   // Birth & Death tables
-        'migration_pengaduan_baru.sql'        // Citizen complaints with GPS coordinates & photo uploads
+        'migration_pengaduan_baru.sql',       // Citizen complaints with GPS coordinates & photo uploads
+        'migration_lurah.sql'                 // Add lurah role support
     ];
     
     $dir = __DIR__ . '/database/';

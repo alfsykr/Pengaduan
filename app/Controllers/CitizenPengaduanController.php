@@ -8,7 +8,7 @@ class CitizenPengaduanController
 {
     public static function index(): void
     {
-        requireLogin();
+        requireCitizen();
         
         if (($_GET['action'] ?? '') === 'ajax_detail') {
             header('Content-Type: application/json');
@@ -64,7 +64,7 @@ class CitizenPengaduanController
 
     public static function buat(): void
     {
-        requireLogin();
+        requireCitizen();
         $pageTitle = 'Buat Laporan Warga';
         
         partial('header');

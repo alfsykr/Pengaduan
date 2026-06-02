@@ -14,8 +14,14 @@ switch ($action) {
     case 'reset_password':
         handleResetPassword();
         break;
+    case 'update_user_role':
+        handleUpdateUserRole();
+        break;
     case 'update_admin_profile':
         handleUpdateAdminProfile();
+        break;
+    case 'change_password':
+        handleChangePassword();
         break;
     default:
         header('Location: ' . baseUrl('admin.php'));
@@ -24,7 +30,7 @@ switch ($action) {
 
 function handleUpdateStatus()
 {
-    requireAdmin();
+    requireAdminOrLurah();
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: ' . baseUrl('admin.php'));
         exit;
@@ -109,7 +115,7 @@ function handleResetPassword()
     }
 
     $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM users WHERE (email = ? OR nik = ?) AND role = 'user'");
+    $stmt = $db->prepare("SELECT * FROM users WHERE (email = ? OR nik = ?) AND role IN ('user', 'lurah')");
     $stmt->execute([$identifier, $identifier]);
     $targetUser = $stmt->fetch();
 
@@ -130,7 +136,7 @@ function handleResetPassword()
 
 function handleUpdateAdminProfile()
 {
-    requireAdmin();
+    requireAdminOrLurah();
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: ' . baseUrl('admin.php?page=settings'));
         exit;
@@ -199,17 +205,91 @@ function handleUpdateAdminProfile()
     }
 
     if ($avatarFileName !== null) {
-        $stmt = $db->prepare('UPDATE users SET nama_lengkap = ?, nik = ?, avatar = ? WHERE id = ? AND role = ?');
-        $stmt->execute([$nama, $nik, $avatarFileName, $uid, 'admin']);
+        $stmt = $db->prepare('UPDATE users SET nama_lengkap = ?, nik = ?, avatar = ? WHERE id = ?');
+        $stmt->execute([$nama, $nik, $avatarFileName, $uid]);
     } else {
-        $stmt = $db->prepare('UPDATE users SET nama_lengkap = ?, nik = ? WHERE id = ? AND role = ?');
-        $stmt->execute([$nama, $nik, $uid, 'admin']);
+        $stmt = $db->prepare('UPDATE users SET nama_lengkap = ?, nik = ? WHERE id = ?');
+        $stmt->execute([$nama, $nik, $uid]);
     }
 
     $_SESSION['user_name'] = $nama;
     $_SESSION['user_nik'] = $nik;
     currentUser(true);
     setFlash('success', 'Profil admin berhasil diperbarui.');
+
+    header('Location: ' . baseUrl('admin.php?page=settings'));
+    exit;
+}
+
+function handleUpdateUserRole()
+{
+    requireAdmin();
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: ' . baseUrl('admin.php?page=users'));
+        exit;
+    }
+
+    $userId = intval($_POST['user_id'] ?? 0);
+    $newRole = $_POST['role'] ?? '';
+
+    $validRoles = ['user', 'admin', 'lurah'];
+    if (!in_array($newRole, $validRoles, true)) {
+        setFlash('danger', 'Role tidak valid.');
+        header('Location: ' . baseUrl('admin.php?page=users'));
+        exit;
+    }
+
+    if ($userId <= 0) {
+        setFlash('danger', 'ID pengguna tidak valid.');
+        header('Location: ' . baseUrl('admin.php?page=users'));
+        exit;
+    }
+
+    if ($userId === (int) $_SESSION['user_id']) {
+        setFlash('danger', 'Anda tidak dapat mengubah role Anda sendiri.');
+        header('Location: ' . baseUrl('admin.php?page=users'));
+        exit;
+    }
+
+    $db = getDB();
+    $stmt = $db->prepare('UPDATE users SET role = ? WHERE id = ?');
+    $stmt->execute([$newRole, $userId]);
+
+    setFlash('success', 'Role pengguna berhasil diperbarui.');
+    header('Location: ' . baseUrl('admin.php?page=users'));
+    exit;
+}
+
+function handleChangePassword()
+{
+    requireAdminOrLurah();
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: ' . baseUrl('admin.php?page=settings'));
+        exit;
+    }
+
+    $current = $_POST['current_password'] ?? '';
+    $new = $_POST['new_password'] ?? '';
+    $confirm = $_POST['confirm_password'] ?? '';
+
+    if (empty($current) || empty($new) || empty($confirm)) {
+        setFlash('danger', 'Semua kolom password wajib diisi.');
+        header('Location: ' . baseUrl('admin.php?page=settings'));
+        exit;
+    }
+
+    $result = \App\Models\UserAccount::changePassword(
+        (int) $_SESSION['user_id'],
+        $current,
+        $new,
+        $confirm
+    );
+
+    if ($result['ok']) {
+        setFlash('success', 'Kata sandi berhasil diubah.');
+    } else {
+        setFlash('danger', $result['message'] ?? 'Gagal mengubah kata sandi.');
+    }
 
     header('Location: ' . baseUrl('admin.php?page=settings'));
     exit;

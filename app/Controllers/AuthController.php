@@ -40,7 +40,7 @@ function handleLogin()
 
     if (loginUser($identifier, $password)) {
         setFlash('success', 'Selamat datang, ' . $_SESSION['user_name'] . '!');
-        if ($_SESSION['user_role'] === 'admin') {
+        if ($_SESSION['user_role'] === 'admin' || $_SESSION['user_role'] === 'lurah') {
             header('Location: ' . baseUrl('admin.php'));
         } else {
             header('Location: ' . baseUrl('index.php'));
